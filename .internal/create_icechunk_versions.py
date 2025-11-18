@@ -1,3 +1,7 @@
+"""
+This script generates versions of our example notebooks modified to open the icechunk copy of the dataset.
+"""
+
 import json
 from pathlib import Path
 
