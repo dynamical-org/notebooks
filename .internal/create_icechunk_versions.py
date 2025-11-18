@@ -23,8 +23,7 @@ storage = icechunk.s3_storage(bucket="{bucket}", prefix="{path}", anonymous=True
 repo = icechunk.Repository.open(storage)
 session = repo.readonly_session("main")
 ds = xr.open_zarr(session.store, chunks=None)
-ds
-"""
+ds"""
 
 
 def parse_s3_uri(s3_uri):
