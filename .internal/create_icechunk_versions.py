@@ -15,6 +15,10 @@ NOTEBOOKS = [
         "icechunk_s3_uri": "s3://dynamical-noaa-hrrr/noaa-hrrr-forecast-48-hour/v0.1.0.icechunk/",
     },
     {
+        "name": "noaa-hrrr-analysis.ipynb",
+        "icechunk_s3_uri": "s3://dynamical-noaa-hrrr/noaa-hrrr-analysis/v0.1.0.icechunk/",
+    },
+    {
         "name": "ecmwf-ifs-ens-forecast-15-day-0-25-degree.ipynb",
         "icechunk_s3_uri": "s3://dynamical-ecmwf-ifs-ens/ecmwf-ifs-ens-forecast-15-day-0-25-degree/v0.1.0.icechunk/",
     },
