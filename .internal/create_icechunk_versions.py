@@ -27,7 +27,7 @@ NOTEBOOKS = [
 ICECHUNK_OPEN_TEMPLATE = """import icechunk
 import xarray as xr
 
-storage = icechunk.s3_storage(bucket="{bucket}", prefix="{path}", anonymous=True)
+storage = icechunk.s3_storage(bucket="{bucket}", prefix="{path}", region="us-west-2", anonymous=True)
 repo = icechunk.Repository.open(storage)
 session = repo.readonly_session("main")
 ds = xr.open_zarr(session.store, chunks=None)
