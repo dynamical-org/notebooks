@@ -7,6 +7,14 @@ from pathlib import Path
 
 NOTEBOOKS = [
     {
+        "name": "noaa-gefs-forecast-35-day.ipynb",
+        "icechunk_s3_uri": "s3://dynamical-noaa-gefs/noaa-gefs-forecast-35-day/v0.2.0.icechunk/",
+    },
+    {
+        "name": "noaa-gefs-analysis.ipynb",
+        "icechunk_s3_uri": "s3://dynamical-noaa-gefs/noaa-gefs-analysis/v0.1.2.icechunk/",
+    },
+    {
         "name": "noaa-gfs-forecast.ipynb",
         "icechunk_s3_uri": "s3://dynamical-noaa-gfs/noaa-gfs-forecast/v0.2.7.icechunk/",
     },
