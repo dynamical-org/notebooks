@@ -20,4 +20,6 @@ dependencies = [
 [dependency-groups]
 dev = [
     "ipykernel>=6.29.5",
+    "nbclient>=0.10.4",
+    "nbformat>=5.10.4",
 ]
