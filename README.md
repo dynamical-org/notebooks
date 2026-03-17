@@ -13,7 +13,7 @@ We suggest using `uv` to install python and dependencies in a consistent, isolat
    * In your editor/IDE: In a terminal run `uv sync` then open this folder in your editor and when asked to select a python interpreter choose `.venv/bin/python` on macOS and Linux, or `.venv\Scripts\python` on Windows.
 
 ## Google Colab
-Each notebook includes an install cell at the top. Run it and restart the runtime when prompted.
+Each notebook includes an install cell at the top. Run it to install dependencies. You can get a direct link to open any notebook in Colab from the examples section of each [dataset catalog entry](https://dynamical.org/catalog/).
 
 ## SageMaker Studio Lab
 Clone this repository, then create a conda environment from the included `environment.yml`:
