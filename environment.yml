@@ -1,0 +1,22 @@
+name: dynamical-notebooks
+channels:
+  - conda-forge
+dependencies:
+  - python>=3.12
+  - xarray>=2025.3.0
+  - zarr>=3.0.8
+  - aiohttp>=3.11.14
+  - cartopy>=0.24.1
+  - icechunk>=1.1.12
+  - matplotlib>=3.10.1
+  - pandas>=2.2.3
+  - requests>=2.32.3
+  - rioxarray>=0.19.0
+  - s3fs>=2025.3.0
+  - geopandas
+  - xvec
+  - netcdf4
+  - scipy
+  - bottleneck
+  - dask
+  - ipykernel
