@@ -38,6 +38,10 @@ NOTEBOOKS = [
         "name": "ecmwf-ifs-ens-forecast-15-day-0-25-degree.ipynb",
         "icechunk_s3_uri": "s3://dynamical-ecmwf-ifs-ens/ecmwf-ifs-ens-forecast-15-day-0-25-degree/v0.1.0.icechunk/",
     },
+    {
+        "name": "ecmwf-aifs-deterministic-forecast.ipynb",
+        "icechunk_s3_uri": "s3://dynamical-aifs-deterministic/ecmwf-aifs-deterministic-forecast/v0.1.0.icechunk/",
+    },
 ]
 
 ICECHUNK_OPEN_TEMPLATE = """import icechunk
@@ -109,7 +113,7 @@ def process_notebook(notebook_path, bucket, path):
         # Find and modify the first pip install cell
         if (
             not pip_cell_found
-            and "%pip install" in cell_source
+            and "!uv pip install" in cell_source
             and "requests aiohttp" in cell_source
         ):
             # Replace "requests aiohttp" with "icechunk"
