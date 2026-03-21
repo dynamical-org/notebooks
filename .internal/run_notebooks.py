@@ -19,7 +19,7 @@ from nbclient import NotebookClient
 
 from create_icechunk_versions import main as create_icechunk_versions
 
-SKIP_MARKER = "%pip install"
+SKIP_MARKER = "pip install"
 
 # Notebooks to skip by default (e.g. one-off or WIP notebooks)
 SKIP_NOTEBOOKS = {"noaa-stations+gefs.ipynb"}

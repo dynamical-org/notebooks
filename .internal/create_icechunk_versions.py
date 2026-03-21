@@ -40,7 +40,7 @@ NOTEBOOKS = [
     },
     {
         "name": "ecmwf-aifs-deterministic-forecast.ipynb",
-        "icechunk_s3_uri": "s3://dynamical-aifs-deterministic/ecmwf-aifs-deterministic-forecast/v0.1.0.icechunk/",
+        "icechunk_s3_uri": "s3://dynamical-ecmwf-aifs-deterministic/ecmwf-aifs-deterministic-forecast/v0.1.0.icechunk/",
     },
 ]
 
