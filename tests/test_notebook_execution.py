@@ -1,11 +1,14 @@
 """
-Validate that all notebooks have been executed exactly once from start to finish.
+Validate that all notebooks have been executed exactly once from a fresh kernel,
+top to bottom, with pip install cells skipped.
 
 Checks:
-- Every code cell (except pip install cells) has a non-null execution_count.
-- Execution counts are sequential starting from 1 with no gaps or repeats,
-  which proves a single clean run from top to bottom.
-- Pip install cells have execution_count = None (skipped by run_notebooks.py).
+- Pip install cells have execution_count=None and no outputs (not run).
+- Every other code cell has a non-null execution_count (was run).
+- The first executed cell's count is consistent with a fresh kernel
+  (1 if pip cells weren't executed, or pip_count + 1 if they were).
+- Execution counts are strictly sequential with no gaps or repeats,
+  proving a single clean run from top to bottom.
 """
 
 import sys
@@ -24,6 +27,7 @@ def validate_notebook(notebook_path: Path) -> list[str]:
     nb = nbformat.read(notebook_path, as_version=4)
     errors: list[str] = []
 
+    pip_cell_count = 0
     executed_counts: list[tuple[int, int]] = []  # (cell_index, execution_count)
 
     for i, cell in enumerate(nb.cells):
@@ -33,10 +37,15 @@ def validate_notebook(notebook_path: Path) -> list[str]:
         is_pip_cell = SKIP_MARKER in cell.source
 
         if is_pip_cell:
+            pip_cell_count += 1
             if cell.execution_count is not None:
                 errors.append(
                     f"Cell {i}: pip install cell should have execution_count=None, "
                     f"got {cell.execution_count}"
+                )
+            if cell.outputs:
+                errors.append(
+                    f"Cell {i}: pip install cell should have no outputs"
                 )
             continue
 
@@ -50,8 +59,21 @@ def validate_notebook(notebook_path: Path) -> list[str]:
         errors.append("No executed code cells found")
         return errors
 
-    # Verify execution counts are strictly sequential (each increments by 1).
-    # They may not start at 1 if pip install cells consumed earlier counts.
+    # Verify the notebook was run from a fresh kernel restart, top to bottom.
+    # A fresh kernel starts execution counts at 1. Pip install cells may or may
+    # not have consumed kernel counts (run_notebooks.py executes a no-op
+    # placeholder that consumes a count, but older runs may not have). The first
+    # executed cell's count must be consistent with a fresh kernel either way.
+    first_cell, first_count = executed_counts[0]
+    valid_first_counts = {1, pip_cell_count + 1}
+    if first_count not in valid_first_counts:
+        errors.append(
+            f"Cell {first_cell}: expected execution_count in {valid_first_counts} "
+            f"(fresh kernel with {pip_cell_count} pip cell(s)), "
+            f"got {first_count} — notebook may not have been run from a fresh kernel"
+        )
+
+    # Execution counts must be strictly sequential (each increments by 1).
     for idx in range(1, len(executed_counts)):
         prev_cell, prev_count = executed_counts[idx - 1]
         curr_cell, curr_count = executed_counts[idx]
