@@ -5,7 +5,7 @@ Python jupyter notebooks demonstrating the use of dynamical.org datasets. Browse
 
 # Getting started
 
-We suggest using `uv` to install python and dependencies in a consistent, isolated way that won't impact any other python installations on your system.
+We suggest using `uv` to install python and dependencies in a consistent, isolated way that won't impact other python installations on your system.
 
 1. Install uv: https://docs.astral.sh/uv/getting-started/installation/ (it's a one liner)
 2. Run it
