@@ -39,8 +39,8 @@ NOTEBOOKS = [
         "icechunk_s3_uri": "s3://dynamical-ecmwf-ifs-ens/ecmwf-ifs-ens-forecast-15-day-0-25-degree/v0.1.0.icechunk/",
     },
     {
-        "name": "ecmwf-aifs-deterministic-forecast.ipynb",
-        "icechunk_s3_uri": "s3://dynamical-ecmwf-aifs-deterministic/ecmwf-aifs-deterministic-forecast/v0.1.0.icechunk/",
+        "name": "ecmwf-aifs-single-forecast.ipynb",
+        "icechunk_s3_uri": "s3://dynamical-ecmwf-aifs-single/ecmwf-aifs-single-forecast/v0.1.0.icechunk/",
     },
 ]
 
