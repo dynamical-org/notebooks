@@ -195,6 +195,7 @@ def main():
             # Write the modified notebook
             with open(output_path, "w", encoding="utf-8") as f:
                 json.dump(notebook, f, indent=1, ensure_ascii=False)
+                f.write("\n")
 
             print(f"  Created {output_name}")
 
