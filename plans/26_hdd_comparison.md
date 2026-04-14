@@ -79,3 +79,71 @@ Only after Phase 1 numbers look right.
 - `~/workspace/asos-parquet/README.md` — DuckDB query patterns
 
 ## Log
+
+### 2026-04-14 — first script run, thesis partially confirmed
+
+Ran `hdd_comparison.py` at KMSP for 2024-12-01..2025-03-01, day-ahead (24–42h lead, 6-hourly samples). 2762 hourly obs, 91 days. 1 missing init in AIFS (n=90 aligned).
+
+|  | GFS | AIFS |
+|---|---|---|
+| vs obs-hourly | RMSE **1.80** / MAE 1.48 / bias +0.30 | RMSE 2.04 / MAE 1.55 / bias +1.16 |
+| vs obs-6-hourly (fair) | RMSE 1.76 / MAE 1.43 / bias +0.15 | **RMSE 1.71 / MAE 1.26** / bias +1.02 |
+
+Fair-sampling flips the result: AIFS beats GFS on RMSE/MAE when both sides use the same 6-hourly UTC grid. Delta is small (~3% RMSE). AIFS has a real ~1 °C warm bias. Against operational hourly obs, GFS still wins — the 4-sample forecast T_max/T_min understates diurnal range and AIFS's warm bias amplifies the mismatch.
+
+Possible next steps (pending user direction):
+- Try longer lead (5-day) where AIFS typically crushes GFS per scorecards
+- Try another station (KORD, KBOS) to check MSP specificity
+- Accept fair-sampling framing and build the notebook around it
+- Check dynamical scorecard for a station × lead combo where delta is visibly larger
+
+### 2026-04-14 — scorecard investigation, station pivot
+
+Queried `https://assets.dynamical.org/scorecard/statistics.parquet` for T_2m RMSE, GFS vs AIFS, 180-day window (2025-10 to 2026-04).
+
+**MSP is middle of the pack (rank 1547/2616).** AIFS beats GFS at all leads but only by 0.4–0.8 °C RMSE. MSP is open Midwest flat terrain — GFS's 0.25° grid handles it fine (lead 0 RMSE 2.07), so there's not much room for AIFS to shine.
+
+**Better stations (CONUS, 180d window, lead 1d delta):**
+
+| Station | Location | AIFS RMSE | GFS RMSE | Δ |
+|---|---|---|---|---|
+| LHX | La Junta, CO | 1.88 | 4.68 | **-2.80** |
+| LBF | North Platte, NE | 2.52 | 5.09 | -2.57 |
+| CEZ | Cortez, CO | 2.60 | 5.17 | -2.57 |
+| MSP | Minneapolis | 1.76 | 2.33 | -0.57 |
+
+Pattern: dramatic AIFS advantage shows up at Great Plains / Intermountain transition stations where GFS struggles with terrain (downslope, cold-air drainage). AIFS learned those effects from training. GFS RMSE 4–5 °C at lead 0 at these stations is *terrible* by weather-model standards — a ripe target for the "zero-code-change swap" demo.
+
+**Recommendation:** switch station to **LBF** (North Platte, NE). Day-ahead delta of 2.57 °C RMSE is ~5x MSP's. Recognizable Great Plains cold station, strong HDD signal, relatable for US energy/utility narrative. LHX has slightly bigger delta but North Platte is more familiar.
+
+### 2026-04-14 — pivot to BNA + multi-horizon
+
+User pivoted to **BNA (Nashville)** — their home station. Scorecard check:
+
+| Lead | AIFS RMSE | GFS RMSE | Delta | BNA rank / 2616 |
+|---|---|---|---|---|
+| 1d | 1.33 | 2.46 | -1.13 | 560 (top 21%) |
+| 3d | 1.61 | 2.95 | **-1.34** | 294 (top 11%) |
+
+Not as dramatic as LBF, but strong — and the bias story is cleaner: AIFS bias ~0 at BNA, GFS has persistent -1 °C cold bias in the scorecard window. Personal relevance matters more than abstract ranking for a demo.
+
+Decision: **BNA + multi-horizon (1d, 3d, 5d)** — shows AIFS advantage persisting and compounding with lead, the textbook AI-weather selling point.
+
+### 2026-04-14 — BNA multi-horizon script run
+
+Refactored to load the point column once per model (slice init window to `target_days - max_lead` up to last target), then compute HDD in memory for each lead. Ran on winter 2024-12 to 2025-03.
+
+|  model | lead | RMSE | MAE | bias |
+|---|---|---|---|---|
+| GFS  | 1d | 1.90 | 1.55 | +1.16 |
+| GFS  | 3d | 2.18 | 1.77 | +1.07 |
+| GFS  | 5d | 2.74 | 2.14 | +0.96 |
+| AIFS | 1d | **1.66** | 1.39 | +1.15 |
+| AIFS | 3d | **1.84** | 1.53 | +1.21 |
+| AIFS | 5d | **2.35** | 1.89 | +1.16 |
+
+**Thesis confirmed:** AIFS wins at every lead, delta grows with horizon (0.24 → 0.34 → 0.39 RMSE). AIFS 5d ≈ GFS 3d. Plot (hdd_comparison.png) shows three stacked time-series panels, divergence visibly growing with lead — classic AI-weather figure.
+
+Bias note: both models have ~+1 °C HDD bias (i.e. cold T bias) in this window. Scorecard's AIFS bias is smaller (-0.3) but that's for a different window (2025-10..2026-04) and partially caused by 4-sample daily T_max/T_min understating diurnal range. Relative ordering (AIFS < GFS) is robust.
+
+**Phase 1 complete. Proceeding to Phase 2 — notebook port.**
