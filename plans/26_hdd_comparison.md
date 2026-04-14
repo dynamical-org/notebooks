@@ -164,6 +164,8 @@ Notebook `noaa-gfs+ecmwf-aifs-hdd.ipynb` built with the user-requested 6-step fl
 
 **Tooling extension:** `.internal/create_icechunk_versions.py` now supports a list of icechunk URIs per notebook (one per `xr.open_zarr` cell, replaced in order) and preserves the original variable name of the assignment (e.g. `gfs_ds = ...`, `aifs_ds = ...`) instead of hardcoding `ds`. Backward-compatible — single-dataset notebooks still assign to `ds` because their source does.
 
+**2026-04-14 update: reverted tooling extension.** User requested the notebook be icechunk-native instead of HTTP-Zarr-with-generated-icechunk-variant. That eliminates the need for multi-URI support in `create_icechunk_versions.py`, so the invasive tooling changes were reverted to the original single-URI shape. Net change in that file is only adding `noaa-gfs+ecmwf-aifs-hdd.ipynb` to `allowed_missing` so the generator doesn't complain. Main notebook rewritten so both `gfs_ds` and `aifs_ds` are opened via `icechunk.s3_storage(...)` directly (no HTTP Zarr URL anywhere). Title updated to `- dynamical.org Icechunk Zarr`, pip install includes `icechunk`. Generated `-icechunk.ipynb` variant deleted. Metrics unchanged (same data, same logic).
+
 **Notebook results (winter 2025-12-01 to 2026-03-01, BNA):**
 
 |  lead | GFS RMSE | AIFS RMSE | delta |
