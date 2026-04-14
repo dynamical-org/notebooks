@@ -147,3 +147,31 @@ Refactored to load the point column once per model (slice init window to `target
 Bias note: both models have ~+1 °C HDD bias (i.e. cold T bias) in this window. Scorecard's AIFS bias is smaller (-0.3) but that's for a different window (2025-10..2026-04) and partially caused by 4-sample daily T_max/T_min understating diurnal range. Relative ordering (AIFS < GFS) is robust.
 
 **Phase 1 complete. Proceeding to Phase 2 — notebook port.**
+
+### 2026-04-14 — Phase 2: notebook built
+
+Fetched icechunk URIs from STAC catalog (`https://dynamical.org/stac/catalog.json`):
+- GFS: `s3://dynamical-noaa-gfs/noaa-gfs-forecast/v0.2.7.icechunk/`
+- AIFS: `s3://dynamical-ecmwf-aifs-single/ecmwf-aifs-single-forecast/v0.1.0.icechunk/`
+
+Notebook `noaa-gfs+ecmwf-aifs-hdd.ipynb` built with the user-requested 6-step flow:
+1. Load GFS + plot 2026-01-20 00Z temperature forecast at BNA
+2. Load AIFS + plot same forecast (visibly identical selection code, different dataset)
+3. Define `hdd_analysis(ds, lat, lon, days)` helper (works on any dataset with the shared schema)
+4. Run on GFS
+5. Run on AIFS — *same function*
+6. Compute RMSE/MAE/bias table and 3-panel comparison plot
+
+**Tooling extension:** `.internal/create_icechunk_versions.py` now supports a list of icechunk URIs per notebook (one per `xr.open_zarr` cell, replaced in order) and preserves the original variable name of the assignment (e.g. `gfs_ds = ...`, `aifs_ds = ...`) instead of hardcoding `ds`. Backward-compatible — single-dataset notebooks still assign to `ds` because their source does.
+
+**Notebook results (winter 2025-12-01 to 2026-03-01, BNA):**
+
+|  lead | GFS RMSE | AIFS RMSE | delta |
+|---|---|---|---|
+| 1d | 1.80 | **1.31** | -0.49 (27%) |
+| 3d | 2.17 | **1.65** | -0.52 (24%) |
+| 5d | 3.41 | **2.42** | -0.99 (29%) |
+
+**Headline:** AIFS 5-day forecast (2.42) is *better* than GFS 3-day (2.17). AI model out-forecasts GFS by 2 days of lead time on this metric.
+
+Notebook 611 KB (< 10 MB), zero error cells, icechunk variant generated and verified. Scratch `hdd_comparison.py` + `.png` deleted.
