@@ -177,3 +177,38 @@ Notebook `noaa-gfs+ecmwf-aifs-hdd.ipynb` built with the user-requested 6-step fl
 **Headline:** AIFS 5-day forecast (2.42) is *better* than GFS 3-day (2.17). AI model out-forecasts GFS by 2 days of lead time on this metric.
 
 Notebook 611 KB (< 10 MB), zero error cells, icechunk variant generated and verified. Scratch `hdd_comparison.py` + `.png` deleted.
+
+### 2026-04-15 — PR review simplification pass
+
+Alden review on [PR #26](https://github.com/dynamical-org/notebooks/pull/26) — three asks that I'm handling (user is handling "make text less AI"):
+
+**1. Drop unnecessary safety / plotting fanciness.** Removed across the notebook:
+- `np.asarray(sub.values, dtype=float)` — use the xarray DataArray directly
+- `np.nanmax/nanmin` + `np.errstate(all="ignore")` context manager — use xarray's `.max("lead_time")` / `.min("lead_time")` which skip NaNs for float by default
+- `np.clip(..., 0, None)` — use xarray's `.clip(min=0)` on the DataArray
+- Docstrings on `load_station_obs` / `hdd_analysis` / `metrics` (per CLAUDE.md, no docstrings unless asked)
+- Type annotations on helper functions
+- Helper `daily_hdd_from_subdaily` — inlined as 2 lines using `t_daily.mean(axis=1)` for `(max+min)/2`
+- `float(...)` wraps in `metrics` — pandas returns numpy floats already
+- Rewrote `metrics` from a row-by-row append-and-build-DataFrame loop into a single vectorized expression using `forecast_hdd.sub(obs_hdd, axis=0)` and then `err.count()` / `err.mean()` / `(err**2).mean()**0.5`
+- `numpy` import — no longer needed after removing all of the above
+- Plot `lw=2`, `alpha=0.85`, `color="tab:orange/blue"`, `loc="upper right"`, figure-level `axes[0].text(...)` overlay — all dropped (obs stays `color="black"`)
+- `fig.tight_layout()` kept; `ax.grid()` kept (dropped the `alpha=0.3` per Alden's hint but he explicitly said keep the grid)
+- Rewrote the two single-forecast plot cells to inline the `.sel()` call (no `gfs_bna`/`aifs_bna` intermediate)
+
+**2. `n` → `count`.** Done, in `metrics` return.
+
+**3. Canonical icechunk URL — not ready.** STAC catalog (`https://dynamical.org/stac/noaa-gfs-forecast/collection.json`) still points to `s3://dynamical-noaa-gfs/noaa-gfs-forecast/v0.2.7.icechunk/`, and `https://data.dynamical.org/noaa/gfs/forecast/latest.icechunk[/]` returns 404. Leaving the versioned URIs in place; flip when canonical lands.
+
+**Equivalence check.** Ran old and new `hdd_analysis` side-by-side on the same GFS data. Max abs difference: 2.5 × 10⁻⁶ — float32 vs float64 rounding (old code upcast via `asarray(..., dtype=float)`; new code stays at xarray native float32). Fully equivalent.
+
+**Line count impact** (cells 10-12, 18, 19):
+- `load_station_obs`: 25 → 20 lines (no docstring, no type hints, compact index handling)
+- Inline `obs_hdd` (replacing `daily_hdd_from_subdaily`): 9 → 5 lines
+- `hdd_analysis`: 35 → 18 lines
+- `metrics` + call block: 24 → 14 lines
+- Comparison plot: 25 → 11 lines
+
+**Metric drift note:** Yesterday's run at BNA showed AIFS beating GFS cleanly at every lead (1d: 1.80 → 1.31, etc.). Today's run on today's asos-parquet data shows a 1-day obs drop (2501 → 2368 hourly rows, 91 → 90 days in window) and new metrics (1d: 2.15 tie; 3d: GFS 2.55 / AIFS 2.40; 5d: GFS 3.62 / AIFS 3.01). The 1d tie is a single-day-window artifact — at 3d and 5d the AIFS advantage persists and the headline (AIFS 5d ≈ GFS 3d) still holds. asos-parquet updates hourly, so exact numbers will drift on every re-run; that's fine for a demo notebook that re-renders via `run_notebooks.py`.
+
+**Caveat:** one of the things I dropped was a protective `tz_localize(None)` on the obs index — duckdb returns tz-aware UTC timestamps and the forecast `init_time` is tz-naive, so comparison blew up on the first re-run. Added it back as the last two lines of `load_station_obs`. That's real glue, not gratuitous safety.
