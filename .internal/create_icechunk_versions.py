@@ -141,7 +141,12 @@ def main():
     root_dir = Path(__file__).parent.parent
 
     # Check that all *.ipynb files in the root directory have an entry in NOTEBOOKS
-    allowed_missing = {"noaa-stations+gefs.ipynb"}
+    allowed_missing = {
+        "noaa-stations+gefs.ipynb",
+        # Icechunk-native notebook — already opens datasets via icechunk directly,
+        # so it doesn't need a separate `-icechunk.ipynb` variant.
+        "noaa-gfs+ecmwf-aifs-hdd.ipynb",
+    }
     all_notebooks = set(
         p.name
         for p in root_dir.glob("*.ipynb")

@@ -7,6 +7,7 @@ requires-python = ">=3.12"
 dependencies = [
     "aiohttp>=3.11.14",
     "cartopy>=0.24.1",
+    "duckdb>=1.5.2",
     "icechunk>=1.1.12",
     "matplotlib>=3.10.1",
     "pandas>=2.2.3",
