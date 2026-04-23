@@ -6,9 +6,7 @@ Clears all outputs first, then runs and saves with updated outputs.
 Usage:
     uv run python .internal/run_notebooks.py [notebook1.ipynb notebook2.ipynb ...]
 
-If no notebooks are specified, runs all non-icechunk notebooks in the root directory.
-
-Always updates the icechunk versions of notebooks after running the main notebooks.
+If no notebooks are specified, runs all notebooks in the root directory.
 """
 
 import sys
@@ -16,8 +14,6 @@ from pathlib import Path
 
 import nbformat
 from nbclient import NotebookClient
-
-from create_icechunk_versions import main as create_icechunk_versions
 
 SKIP_MARKER = "pip install"
 
@@ -77,17 +73,11 @@ def main():
         notebooks = [Path(arg) for arg in sys.argv[1:]]
     else:
         notebooks = sorted(
-            p
-            for p in root_dir.glob("*.ipynb")
-            if not p.name.endswith("-icechunk.ipynb") and p.name not in SKIP_NOTEBOOKS
+            p for p in root_dir.glob("*.ipynb") if p.name not in SKIP_NOTEBOOKS
         )
 
     for nb_path in notebooks:
         run_notebook(nb_path)
-
-    # Regenerate icechunk versions of notebooks
-    print("\nRegenerating icechunk notebook versions...")
-    create_icechunk_versions()
 
 
 if __name__ == "__main__":

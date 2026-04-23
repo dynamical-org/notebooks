@@ -5,9 +5,9 @@ description = "Add your description here"
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
-    "aiohttp>=3.11.14",
     "cartopy>=0.24.1",
     "duckdb>=1.5.2",
+    "dynamical-catalog>=0.4.0",
     "icechunk>=2.0.3",
     "matplotlib>=3.10.1",
     "pandas>=2.2.3",
