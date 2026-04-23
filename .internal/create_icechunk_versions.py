@@ -146,6 +146,7 @@ def main():
         # Icechunk-native notebook — already opens datasets via icechunk directly,
         # so it doesn't need a separate `-icechunk.ipynb` variant.
         "noaa-gfs+ecmwf-aifs-hdd.ipynb",
+        "dwd-icon-eu-forecast-5-day.ipynb",
     }
     all_notebooks = set(
         p.name
