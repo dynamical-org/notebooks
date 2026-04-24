@@ -8,7 +8,6 @@ This repo contains example Jupyter notebooks for the [dynamical.org](https://dyn
 - **`.internal/`**: Internal tooling scripts (see below).
 - **`pyproject.toml`**: Python dependencies managed with `uv`. Python 3.12+.
 - **`environment.yml`**: Conda environment for SageMaker Studio Lab.
-- **`connection_diagnostics.py`**: Troubleshooting utility for connectivity to dynamical.org.
 
 ## .internal/ tools
 
