@@ -394,16 +394,17 @@ wheels = [
 
 [[package]]
 name = "dynamical-catalog"
-version = "0.5.0"
+version = "0.7.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
+    { name = "gribberish" },
     { name = "icechunk" },
     { name = "xarray" },
     { name = "zarr" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/24/c5/247243d48723fce9df20812f36237a933f714fdb6d5d05acb4dbf3fe3dd7/dynamical_catalog-0.5.0.tar.gz", hash = "sha256:fec68ee754609d64b092b1d321fbeaca0d1f6b0569baebdfa119cbe529b6b660", size = 45228, upload-time = "2026-04-23T20:36:52.882Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/f0/af/30eee0f9d7922c7eb9b006032a142ae7dcea842fbfff6438ce934477b838/dynamical_catalog-0.7.0.tar.gz", hash = "sha256:bbb9cd343d2b0cd573f9dc5640637fa8cc3b0a5c3b61b9a859cc6f902b7fa025", size = 54506, upload-time = "2026-07-09T19:53:43.611Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/8a/db/f8b9a37879d372be8695bac4652e42b1cbc27cd6e7a3f70521bcd7f0cdeb/dynamical_catalog-0.5.0-py3-none-any.whl", hash = "sha256:b90f27c3489aada5bf49cf3d9dbdcf6b2b76d1d16c2819840841a35b1a5610be", size = 5387, upload-time = "2026-04-23T20:36:51.322Z" },
+    { url = "https://files.pythonhosted.org/packages/5d/91/5824610797a06ea9b60dc3de403a262761f5b3d79b7d80b2daa95988dd2c/dynamical_catalog-0.7.0-py3-none-any.whl", hash = "sha256:4b4cd2ef40341b279ae738ee25adf8d911c4f6d721d6cd141654e8763f6876bd", size = 8220, upload-time = "2026-07-09T19:53:42.566Z" },
 ]
 
 [[package]]
@@ -944,12 +945,10 @@ dependencies = [
     { name = "cartopy" },
     { name = "duckdb" },
     { name = "dynamical-catalog" },
-    { name = "gribberish" },
     { name = "matplotlib" },
     { name = "metpy" },
     { name = "pandas" },
     { name = "rioxarray" },
-    { name = "zarr" },
 ]
 
 [package.dev-dependencies]
@@ -963,13 +962,11 @@ dev = [
 requires-dist = [
     { name = "cartopy", specifier = ">=0.24.1" },
     { name = "duckdb", specifier = ">=1.5.2" },
-    { name = "dynamical-catalog", specifier = ">=0.5.0" },
-    { name = "gribberish", specifier = ">=1.5.0" },
+    { name = "dynamical-catalog", specifier = ">=0.7.0" },
     { name = "matplotlib", specifier = ">=3.10.1" },
     { name = "metpy", specifier = ">=1.7.1" },
     { name = "pandas", specifier = ">=2.2.3" },
     { name = "rioxarray", specifier = ">=0.19.0" },
-    { name = "zarr", specifier = ">=3.2.1" },
 ]
 
 [package.metadata.requires-dev]
