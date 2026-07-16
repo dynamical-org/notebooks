@@ -3,13 +3,21 @@ Execute notebooks, skipping cells that contain %pip install lines.
 
 Clears all outputs first, then runs and saves with updated outputs.
 
+Notebooks are executed in parallel across processes (each notebook is mostly
+waiting on network I/O to S3, so parallelism is a big speedup). Control the
+worker count with the NOTEBOOK_WORKERS environment variable; it defaults to the
+number of CPUs. Set NOTEBOOK_WORKERS=1 to run sequentially (useful for
+debugging).
+
 Usage:
     uv run python .internal/run_notebooks.py [notebook1.ipynb notebook2.ipynb ...]
 
 If no notebooks are specified, runs all notebooks in the root directory.
 """
 
+import os
 import sys
+from concurrent.futures import ProcessPoolExecutor, as_completed
 from pathlib import Path
 
 import nbformat
@@ -21,8 +29,12 @@ SKIP_MARKER = "pip install"
 SKIP_NOTEBOOKS = {"noaa-stations+gefs.ipynb"}
 
 
-def run_notebook(notebook_path: Path) -> None:
-    print(f"Running {notebook_path.name}...")
+def run_notebook(notebook_path: Path) -> list[str]:
+    """Execute a single notebook and save it. Returns log lines to print.
+
+    Raises on execution failure (propagated to the caller so CI fails).
+    """
+    messages = [f"Running {notebook_path.name}..."]
 
     nb = nbformat.read(notebook_path, as_version=4)
 
@@ -61,12 +73,16 @@ def run_notebook(notebook_path: Path) -> None:
     nbformat.write(nb, notebook_path)
 
     size_mb = notebook_path.stat().st_size / (1024 * 1024)
-    print(f"  Saved {notebook_path.name} ({size_mb:.1f} MB)")
+    messages.append(f"  Saved {notebook_path.name} ({size_mb:.1f} MB)")
     if size_mb > 10:
-        print(f"  ⚠ WARNING: {notebook_path.name} is too large ({size_mb:.1f} MB). Reduce notebook size.")
+        messages.append(
+            f"  ⚠ WARNING: {notebook_path.name} is too large ({size_mb:.1f} MB). "
+            "Reduce notebook size."
+        )
+    return messages
 
 
-def main():
+def main() -> int:
     root_dir = Path(__file__).parent.parent
 
     if len(sys.argv) > 1:
@@ -76,9 +92,48 @@ def main():
             p for p in root_dir.glob("*.ipynb") if p.name not in SKIP_NOTEBOOKS
         )
 
-    for nb_path in notebooks:
-        run_notebook(nb_path)
+    if not notebooks:
+        print("No notebooks to run.")
+        return 0
+
+    default_workers = os.cpu_count() or 1
+    workers = int(os.environ.get("NOTEBOOK_WORKERS", default_workers))
+    workers = max(1, min(workers, len(notebooks)))
+
+    failures: list[tuple[str, BaseException]] = []
+
+    if workers == 1:
+        for nb_path in notebooks:
+            try:
+                for line in run_notebook(nb_path):
+                    print(line, flush=True)
+            except BaseException as exc:  # noqa: BLE001 - report and continue
+                failures.append((nb_path.name, exc))
+                print(f"  ✗ FAILED {nb_path.name}: {exc}", flush=True)
+    else:
+        print(f"Running {len(notebooks)} notebooks with {workers} workers...", flush=True)
+        with ProcessPoolExecutor(max_workers=workers) as executor:
+            future_to_nb = {
+                executor.submit(run_notebook, nb_path): nb_path
+                for nb_path in notebooks
+            }
+            for future in as_completed(future_to_nb):
+                nb_path = future_to_nb[future]
+                try:
+                    for line in future.result():
+                        print(line, flush=True)
+                except BaseException as exc:  # noqa: BLE001 - report and continue
+                    failures.append((nb_path.name, exc))
+                    print(f"  ✗ FAILED {nb_path.name}: {exc}", flush=True)
+
+    if failures:
+        print(f"\n{len(failures)} notebook(s) failed:", flush=True)
+        for name, exc in failures:
+            print(f"  - {name}: {type(exc).__name__}: {exc}", flush=True)
+        return 1
+
+    return 0
 
 
 if __name__ == "__main__":
-    main()
+    sys.exit(main())
