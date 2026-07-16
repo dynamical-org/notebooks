@@ -7,9 +7,13 @@ requires-python = ">=3.12"
 dependencies = [
     "cartopy>=0.24.1",
     "duckdb>=1.5.2",
-    "dynamical-catalog>=0.5.0",
+    "dynamical-catalog>=0.7.0",
+    "gribberish>=1.5.0",
     "matplotlib>=3.10.1",
+    "metpy>=1.6.3",
     "pandas>=2.2.3",
+    "plotly>=6.0",
+    "pystac>=1.10.0",
     "rioxarray>=0.19.0",
 ]
 
