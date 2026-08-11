@@ -16,6 +16,13 @@ on:
     types: [opened]
   discussion:
     types: [created]
+  # pull_request_target, not pull_request: an outside contributor's PR comes from a
+  # fork, and fork-triggered `pull_request` runs get no secrets (so no webhook) and
+  # sit behind first-time-contributor approval. `pull_request_target` runs the base
+  # branch's copy of this file with secrets available. Safe here only because the job
+  # never checks out or executes PR head code.
+  pull_request_target:
+    types: [opened]
 
 permissions: {}
 
@@ -23,13 +30,16 @@ jobs:
   notify:
     runs-on: ubuntu-latest
     # Anyone in the org is OWNER/MEMBER/COLLABORATOR, so this needs no username list.
+    # pull_request comes last in the chain: on review events it holds the PR author's
+    # association, and the reviewer's is the one that decides whether to notify.
     if: >-
       github.event.sender.type != 'Bot' &&
       !contains(fromJSON('["OWNER","MEMBER","COLLABORATOR"]'),
         github.event.comment.author_association ||
         github.event.review.author_association ||
         github.event.issue.author_association ||
-        github.event.discussion.author_association)
+        github.event.discussion.author_association ||
+        github.event.pull_request.author_association)
     steps:
       # Everything from the event goes through env, never string-interpolated into
       # the script -- a comment body is attacker-controlled text.
@@ -39,9 +49,13 @@ jobs:
           ACTOR: ${{ github.event.sender.login }}
           REPO: ${{ github.repository }}
           KIND: ${{ github.event_name }}
-          URL: ${{ github.event.comment.html_url || github.event.review.html_url || github.event.issue.html_url || github.event.discussion.html_url }}
+          URL: ${{ github.event.comment.html_url || github.event.review.html_url || github.event.issue.html_url || github.event.discussion.html_url || github.event.pull_request.html_url }}
           TITLE: ${{ github.event.issue.title || github.event.pull_request.title || github.event.discussion.title }}
-          BODY: ${{ github.event.comment.body || github.event.review.body || github.event.issue.body || github.event.discussion.body }}
+          # The pull_request fallback is event-gated: a review submitted with no body
+          # would otherwise fall through and quote the PR author's description as if
+          # the reviewer had written it. The trailing '' keeps that case empty rather
+          # than rendering the literal "false".
+          BODY: ${{ github.event.comment.body || github.event.review.body || github.event.issue.body || github.event.discussion.body || (github.event_name == 'pull_request_target' && github.event.pull_request.body) || '' }}
         run: |
           set -euo pipefail
 
@@ -51,6 +65,7 @@ jobs:
             pull_request_review)         WHAT="reviewed a PR" ;;
             discussion_comment)          WHAT="commented on a discussion" ;;
             issues)                      WHAT="opened an issue" ;;
+            pull_request_target)         WHAT="opened a PR" ;;
             discussion)                  WHAT="started a discussion" ;;
             *)                           WHAT="posted" ;;
           esac
