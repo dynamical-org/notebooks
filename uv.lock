@@ -394,7 +394,7 @@ wheels = [
 
 [[package]]
 name = "dynamical-catalog"
-version = "0.8.0"
+version = "1.0.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "gribberish" },
@@ -402,9 +402,9 @@ dependencies = [
     { name = "xarray" },
     { name = "zarr" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/42/7d/48ed18930030c185bd9c013fbc0e17497e26b878c73fd16dd4854ca4ec3e/dynamical_catalog-0.8.0.tar.gz", hash = "sha256:74427cd98c0e71f1faec34760e28dab96678cfa9cc0f704ccde656874b3086dd", size = 57076, upload-time = "2026-07-17T17:27:25.537Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/d9/35/6745f7017597c26e94c6561f199085c39fd9d6893f3f1a66695bf5489437/dynamical_catalog-1.0.0.tar.gz", hash = "sha256:366d88aee1e938f5e0a6238f3f5d5c64a8e78c03d282a4c8663232ce2b52dcd5", size = 69000, upload-time = "2026-09-03T16:56:56.425Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/39/e5/6c31264082071696f6cdab50014d52f454777f69d625e90ed7920bcdc5c9/dynamical_catalog-0.8.0-py3-none-any.whl", hash = "sha256:7a69485f69ff06fc186388c147238a96d8a1f9e89982117f929b32eb437f8d13", size = 8971, upload-time = "2026-07-17T17:27:24.548Z" },
+    { url = "https://files.pythonhosted.org/packages/cb/50/737e631d75e04676cb42c765a09f841df952ef11ed709eb3533a36b98650/dynamical_catalog-1.0.0-py3-none-any.whl", hash = "sha256:a0853276ea45b91d8b752aa677116e3b433683088e947b8b71884e9988b7a928", size = 10542, upload-time = "2026-09-03T16:56:55.245Z" },
 ]
 
 [[package]]
@@ -974,7 +974,7 @@ dev = [
 requires-dist = [
     { name = "cartopy", specifier = ">=0.24.1" },
     { name = "duckdb", specifier = ">=1.5.2" },
-    { name = "dynamical-catalog", specifier = ">=0.8.0" },
+    { name = "dynamical-catalog", specifier = ">=1.0.0" },
     { name = "gribberish", specifier = ">=1.5.0" },
     { name = "matplotlib", specifier = ">=3.10.1" },
     { name = "metpy", specifier = ">=1.6.3" },
