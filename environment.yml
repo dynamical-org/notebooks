@@ -21,4 +21,4 @@ dependencies:
   - ipykernel
   - pip
   - pip:
-      - dynamical-catalog>=0.4.0
+      - dynamical-catalog>=1.0.0
