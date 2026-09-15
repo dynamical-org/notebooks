@@ -32,6 +32,7 @@ def select_shard(
         raise ValueError("shard index must be at least zero and less than shard count")
 
     selected = notebooks[shard_index::shard_count]
+    # Both downstream CLIs interpret no paths as "all notebooks".
     if not selected:
         raise ValueError("selected shard contains no notebooks")
     return selected

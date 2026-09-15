@@ -30,7 +30,7 @@ jobs:
         run: uv run python -m unittest tests/test_notebook_coordinator.py
 
       - name: Run and validate notebook shard
-        run: uv run python .internal/test_notebooks.py --shard-index ${{ matrix.shard }} --shard-count 2
+        run: uv run python .internal/test_notebooks.py --shard-index ${{ strategy.job-index }} --shard-count ${{ strategy.job-total }}
 
   test-notebooks:
     name: test-notebooks
