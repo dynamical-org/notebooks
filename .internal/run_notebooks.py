@@ -22,7 +22,7 @@ SKIP_NOTEBOOKS = {"noaa-stations+gefs.ipynb"}
 
 
 def run_notebook(notebook_path: Path) -> None:
-    print(f"Running {notebook_path.name}...")
+    print(f"Running {notebook_path.name}...", flush=True)
 
     nb = nbformat.read(notebook_path, as_version=4)
 
@@ -61,7 +61,7 @@ def run_notebook(notebook_path: Path) -> None:
     nbformat.write(nb, notebook_path)
 
     size_mb = notebook_path.stat().st_size / (1024 * 1024)
-    print(f"  Saved {notebook_path.name} ({size_mb:.1f} MB)")
+    print(f"  Saved {notebook_path.name} ({size_mb:.1f} MB)", flush=True)
     if size_mb > 10:
         print(f"  ⚠ WARNING: {notebook_path.name} is too large ({size_mb:.1f} MB). Reduce notebook size.")
 
