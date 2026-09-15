@@ -22,3 +22,23 @@ conda env create -f environment.yml
 conda activate dynamical-notebooks
 ```
 Then select the `dynamical-notebooks` kernel when opening a notebook.
+
+## Notebook checks
+
+Run and validate one notebook explicitly with:
+
+```
+uv run .internal/run_notebooks.py noaa-gfs-analysis.ipynb
+uv run python tests/test_notebook_execution.py noaa-gfs-analysis.ipynb
+```
+
+CI divides the sorted notebook list into two deterministic shards:
+
+```
+uv run python .internal/test_notebooks.py --shard-index 0 --shard-count 2
+uv run python .internal/test_notebooks.py --shard-index 1 --shard-count 2
+```
+
+The shards run in isolated jobs so they do not share Cartopy caches or compete for
+memory. Within each shard, notebooks execute sequentially before that same set of
+notebooks is validated.
