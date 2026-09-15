@@ -32,11 +32,12 @@ uv run .internal/run_notebooks.py noaa-gfs-analysis.ipynb
 uv run python tests/test_notebook_execution.py noaa-gfs-analysis.ipynb
 ```
 
-CI divides the sorted notebook list into two deterministic shards:
+CI divides the sorted notebook list into three deterministic shards:
 
 ```
-uv run python .internal/test_notebooks.py --shard-index 0 --shard-count 2
-uv run python .internal/test_notebooks.py --shard-index 1 --shard-count 2
+uv run python .internal/test_notebooks.py --shard-index 0 --shard-count 3
+uv run python .internal/test_notebooks.py --shard-index 1 --shard-count 3
+uv run python .internal/test_notebooks.py --shard-index 2 --shard-count 3
 ```
 
 The shards run in isolated jobs so they do not share Cartopy caches or compete for
