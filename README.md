@@ -35,11 +35,23 @@ uv run python tests/test_notebook_execution.py noaa-gfs-analysis.ipynb
 CI divides the sorted notebook list into three deterministic shards:
 
 ```
-uv run python .internal/test_notebooks.py --shard-index 0 --shard-count 3
-uv run python .internal/test_notebooks.py --shard-index 1 --shard-count 3
-uv run python .internal/test_notebooks.py --shard-index 2 --shard-count 3
+uv run python .internal/test_notebooks.py --isolated --shard-index 0 --shard-count 3
+uv run python .internal/test_notebooks.py --isolated --shard-index 1 --shard-count 3
+uv run python .internal/test_notebooks.py --isolated --shard-index 2 --shard-count 3
 ```
 
-The shards run in isolated jobs so they do not share Cartopy caches or compete for
-memory. Within each shard, notebooks execute sequentially before that same set of
-notebooks is validated.
+Without `--isolated`, the coordinator runs the selected notebooks serially in the
+repository environment and then validates their outputs. This default preserves
+the convenient local workflow.
+
+With `--isolated`, the runner creates an explicit temporary environment for each
+dependency group. It contains only the packages named by the notebooks' install
+line, their transitive dependencies, and the runner packages `nbclient`,
+`nbformat`, and `ipykernel`; the execution tools also supply their dependencies (including IPython); it does not add other assumed Colab preinstalls. A missing
+or ambiguous install line fails the check. Each group gets a fresh environment
+and private Jupyter kernel, while uv caches downloaded packages rather than
+persisting the environment. Within a shard, notebooks with the same install-line
+dependencies are grouped and execute serially; the number of groups follows the
+install lines rather than a fixed environment count. Validation receives the
+same exact notebook paths after execution. CI runs the three shards in separate
+jobs.
