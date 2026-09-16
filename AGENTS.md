@@ -41,7 +41,8 @@ Most notebooks follow this shape: title and brief introduction (resolution, cove
 features, catalog link, and license where required); Colab install cell; open and display `ds`; a
 structure note only if the repr is insufficient; short point-series and map examples; two or three
 question-led sections; a `FuncAnimation` rendered with `HTML(anim.to_jshtml())`;
-and a community challenge with genuinely open questions.
+and a community challenge with genuinely open questions. Use one bullet per community challenge
+question.
 
 Use this structure for the introduction cell:
 
