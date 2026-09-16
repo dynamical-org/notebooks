@@ -4,10 +4,18 @@ on:
   pull_request:
     branches: [main]
 
+permissions:
+  contents: read
+
 jobs:
-  test-notebooks:
+  notebook-shard:
     runs-on: ubuntu-latest
     timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      max-parallel: 3
+      matrix:
+        shard: [0, 1, 2]
 
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262  # v4
@@ -21,8 +29,18 @@ jobs:
       - name: Install dependencies
         run: uv sync --group dev
 
-      - name: Run all notebooks
-        run: uv run .internal/run_notebooks.py
+      - name: Coordinator unit tests
+        run: uv run python -m unittest tests/test_notebook_coordinator.py
 
-      - name: Notebook tests
-        run: uv run python tests/test_notebook_execution.py
+      - name: Run and validate notebook shard
+        run: uv run python .internal/test_notebooks.py --shard-index ${{ strategy.job-index }} --shard-count ${{ strategy.job-total }}
+
+  test-notebooks:
+    name: test-notebooks
+    if: always()
+    needs: notebook-shard
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Require every notebook shard to pass
+        run: test "${{ needs.notebook-shard.result }}" = success
