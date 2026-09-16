@@ -12,14 +12,18 @@ If no notebooks are specified, runs all notebooks in the root directory.
 `--isolated` runs each notebook against only the packages its own Colab install
 line names, rather than the repo environment, so an install line that omits
 something the notebook imports fails here instead of on a reader's first run.
-Notebooks are grouped by install line, so the 21 notebooks need a handful of
-environments rather than one each, and uv caches them between runs.
+Notebooks are grouped by install requirements within each invocation. Each group
+gets a fresh environment; uv reuses its download/install cache between groups.
 """
 
+import argparse
 import os
 import subprocess
 import sys
 import tempfile
+import time
+import traceback
+import uuid
 from collections import defaultdict
 from pathlib import Path
 
@@ -29,8 +33,6 @@ SKIP_MARKER = "pip install"
 
 # Notebooks to skip by default (e.g. one-off or WIP notebooks)
 SKIP_NOTEBOOKS = {"noaa-stations+gefs.ipynb"}
-
-KERNEL_NAME = "isolated"
 
 
 def run_group(packages: tuple[str, ...], notebooks: list[Path]) -> bool:
@@ -48,25 +50,38 @@ def run_group(packages: tuple[str, ...], notebooks: list[Path]) -> bool:
     with tempfile.TemporaryDirectory() as tmp:
         env_dir = Path(tmp) / "env"
         kernels = Path(tmp) / "kernels"
+        kernel_name = "notebook-isolated-" + uuid.uuid4().hex
         python = env_dir / "bin" / "python"
 
-        subprocess.run(["uv", "venv", "-q", str(env_dir)], check=True)
+        env = dict(os.environ)
+        for name in ("VIRTUAL_ENV", "PYTHONPATH", "PYTHONHOME"):
+            env.pop(name, None)
+        env["PYTHONNOUSERSITE"] = "1"
+        env["PATH"] = str(python.parent) + os.pathsep + env.get("PATH", "")
+        started = time.monotonic()
+        subprocess.run(
+            ["uv", "venv", "-q", "--python", sys.executable, str(env_dir)],
+            env=env, check=True,
+        )
         subprocess.run(
             ["uv", "pip", "install", "-q", "--python", str(python),
              *packages, *RUNNER_PACKAGES],
-            check=True,
+            env=env, check=True,
         )
         subprocess.run(
             [str(python), "-m", "ipykernel", "install",
-             "--prefix", str(kernels), "--name", KERNEL_NAME],
-            check=True, capture_output=True,
+             "--prefix", str(kernels), "--name", kernel_name],
+            env=env, check=True,
         )
 
-        env = dict(os.environ, JUPYTER_PATH=str(kernels / "share" / "jupyter"))
-        env.pop("VIRTUAL_ENV", None)
+        subprocess.run(
+            ["uv", "pip", "freeze", "--python", str(python)], env=env, check=True,
+        )
+        env["JUPYTER_PATH"] = str(kernels / "share" / "jupyter")
+        print(f"  Environment ready in {time.monotonic() - started:.1f}s: {python}", flush=True)
         result = subprocess.run(
-            [str(python), str(Path(__file__).resolve()),
-             "--kernel", KERNEL_NAME, *(str(n.resolve()) for n in notebooks)],
+            [str(python), "-u", str(Path(__file__).resolve()),
+             "--kernel", kernel_name, *(str(n.resolve()) for n in notebooks)],
             env=env, check=False,
         )
     return result.returncode == 0
@@ -76,20 +91,26 @@ def run_isolated(notebooks: list[Path]) -> int:
     """Run each notebook against only its own install line. Returns an exit code."""
     groups: dict[tuple[str, ...], list[Path]] = defaultdict(list)
     for notebook_path in notebooks:
-        packages = install_line_packages(notebook_path)
-        if packages is None:
-            print(f"Skipping {notebook_path.name}: no install line to isolate against")
-            continue
+        try:
+            packages = install_line_packages(notebook_path)
+        except (ValueError, OSError) as error:
+            print(f"ERROR: {notebook_path.name}: {error}")
+            return 1
         groups[packages].append(notebook_path)
 
     failures: list[str] = []
     for packages, group in sorted(groups.items()):
         print(f"\n=== {' '.join(packages)} ({len(group)} notebook(s)) ===", flush=True)
-        if not run_group(packages, group):
-            failures.extend(n.name for n in group)
+        try:
+            passed = run_group(packages, group)
+        except subprocess.CalledProcessError:
+            traceback.print_exc()
+            passed = False
+        if not passed:
+            failures.append(" ".join(packages))
 
     if failures:
-        print("\nFailed against their own install line:")
+        print("\nDependency groups with failures (see errors above):")
         for name in failures:
             print(f"  {name}")
         return 1
@@ -148,31 +169,28 @@ def run_notebook(notebook_path: Path, kernel_name: str = "python3") -> None:
 
 
 def main() -> int:
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--isolated", action="store_true")
+    parser.add_argument("--kernel", default="python3", help=argparse.SUPPRESS)
+    parser.add_argument("notebooks", nargs="*", type=Path)
+    args = parser.parse_args()
     root_dir = Path(__file__).parent.parent
-    args = sys.argv[1:]
-
-    isolated = "--isolated" in args
-    args = [a for a in args if a != "--isolated"]
-
-    kernel_name = "python3"
-    if "--kernel" in args:
-        index = args.index("--kernel")
-        kernel_name = args[index + 1]
-        del args[index : index + 2]
-
-    if args:
-        notebooks = [Path(arg) for arg in args]
-    else:
-        notebooks = sorted(
-            p for p in root_dir.glob("*.ipynb") if p.name not in SKIP_NOTEBOOKS
-        )
-
-    if isolated:
+    notebooks = args.notebooks or sorted(
+        p for p in root_dir.glob("*.ipynb") if p.name not in SKIP_NOTEBOOKS
+    )
+    if not notebooks:
+        parser.error("no notebooks found")
+    if args.isolated:
         return run_isolated(notebooks)
-
-    for nb_path in notebooks:
-        run_notebook(nb_path, kernel_name)
-    return 0
+    failed = False
+    for notebook in notebooks:
+        try:
+            run_notebook(notebook, args.kernel)
+        except Exception:
+            print(f"FAILED: {notebook.name}", flush=True)
+            traceback.print_exc()
+            failed = True
+    return int(failed)
 
 
 if __name__ == "__main__":

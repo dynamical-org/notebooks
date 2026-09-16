@@ -38,12 +38,13 @@ def select_shard(
     return selected
 
 
-def execute_and_validate(notebooks: list[Path]) -> None:
+def execute_and_validate(notebooks: list[Path], isolated: bool = False) -> None:
     """Run both stages with exactly the same absolute notebook arguments."""
     notebook_args = [str(path.resolve()) for path in notebooks]
-    subprocess.run(
-        [sys.executable, "-u", str(RUNNER_PATH), *notebook_args], check=True
-    )
+    runner_command = [sys.executable, "-u", str(RUNNER_PATH)]
+    if isolated:
+        runner_command.append("--isolated")
+    subprocess.run([*runner_command, *notebook_args], check=True)
     subprocess.run(
         [sys.executable, "-u", str(VALIDATOR_PATH), *notebook_args], check=True
     )
@@ -55,6 +56,11 @@ def build_parser() -> argparse.ArgumentParser:
     )
     parser.add_argument("--shard-index", type=int, default=0)
     parser.add_argument("--shard-count", type=int, default=1)
+    parser.add_argument(
+        "--isolated",
+        action="store_true",
+        help="run notebooks against only the packages in their install lines",
+    )
     return parser
 
 
@@ -69,7 +75,7 @@ def main(argv: list[str] | None = None) -> int:
     except ValueError as error:
         parser.error(str(error))
 
-    execute_and_validate(notebooks)
+    execute_and_validate(notebooks, isolated=args.isolated)
     return 0
 
 
