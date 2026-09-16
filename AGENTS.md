@@ -41,7 +41,17 @@ Most notebooks follow this shape: title and brief introduction (resolution, cove
 features, catalog link, and license where required); Colab install cell; open and display `ds`; a
 structure note only if the repr is insufficient; short point-series and map examples; two or three
 question-led sections; a `FuncAnimation` rendered with `HTML(anim.to_jshtml())`;
-and a community challenge with genuinely open questions.
+and a community challenge with genuinely open questions. Use one bullet per community challenge
+question.
+
+Use this structure for the introduction cell:
+
+- Title: `Quickstart: <dataset name> - dynamical.org Icechunk Zarr`.
+  For multiple datasets, combine their names unambiguously within the catalog, for example
+  `Quickstart: UCSB CHC CHIRPS analysis, preliminary and final - dynamical.org Icechunk Zarr`.
+- Documentation: `Dataset documentation: <full link>`. For multiple datasets, use one bullet per
+  dataset with its name and full documentation link.
+- Include a dataset license only when its terms are not solely CC BY 4.0.
 
 Bound reads to fixed time slices and regions. Animations usually dominate file size, so shorten or
 coarsen them as needed to keep the notebook under the repository limit.
