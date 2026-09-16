@@ -6,7 +6,7 @@ dependencies:
   - xarray>=2025.3.0
   - zarr>=3.0.8
   - cartopy>=0.24.1
-  - icechunk>=2.0.3
+  - icechunk>=2.1.2
   - matplotlib>=3.10.1
   - pandas>=2.2.3
   - requests>=2.32.3

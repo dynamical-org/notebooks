@@ -10,6 +10,7 @@ dependencies = [
     "dynamical-catalog>=1.0.0",
     "geopandas>=1.1.4",
     "gribberish>=1.5.0",
+    "icechunk>=2.1.2",
     "matplotlib>=3.10.1",
     "metpy>=1.6.3",
     "pandas>=2.2.3",
