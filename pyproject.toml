@@ -6,6 +6,7 @@ readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
     "cartopy>=0.24.1",
+    "dask[array]>=2026.8.0",
     "duckdb>=1.5.2",
     "dynamical-catalog>=1.0.0",
     "geopandas>=1.1.4",
