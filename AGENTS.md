@@ -13,8 +13,7 @@ This repo contains example Jupyter notebooks for the [dynamical.org](https://dyn
 
 A quickstart is the front door to one dataset: readers arrive from the catalog to decide whether
 the dataset is useful to them. Assume they know weather data, xarray, and Zarr. Show what is
-distinctive about this dataset; omit generic tooling lessons, storage internals, and chunking. If an
-access pattern is slow, say so briefly and point to the sibling dataset designed for it.
+distinctive about this dataset; omit generic tooling lessons, storage internals, and chunking.
 
 Keep the scope tight. Include only the most important examples, and vary the phenomena rather than
 showing one event several ways. Early cells should read as dataset usage, not a matplotlib tutorial.
@@ -25,8 +24,7 @@ code. Keep stored units unless they are unfamiliar to most readers; set `long_na
 derived fields so they label themselves. Keep cells small.
 
 Avoid decorative markers, annotations, masks, and extra panels unless the result is unclear without
-them. Keep the basemap features needed to interpret the data. Grid and projection setup belongs in
-the notebook when the dataset uses a rotated or projected grid. Comment only context the code cannot
+them. Keep the basemap features needed to interpret the data. Comment only context the code cannot
 express, such as the event behind a timestamp.
 
 **Prose.** Use two or three sentences per section to name the event and orient the reader, then let
