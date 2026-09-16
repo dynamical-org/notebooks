@@ -32,7 +32,7 @@ express, such as the event behind a timestamp.
 **Prose.** Use two or three sentences per section to name the event and orient the reader, then let
 the plot carry the finding. Do not repeat the catalog page or the `ds` repr, or compute values solely
 to quote them in prose. Distinguish model fields from observations and make only claims supported by
-the plot. Naming the issuing organization is sufficient attribution unless a license requires more.
+the plot.
 
 **Before writing**, read the closest notebooks: the same provider or model and the same dataset
 shape (forecast or analysis, deterministic or ensemble, regional or global). Reuse their conventions
@@ -42,7 +42,7 @@ verified coverage and verify dates and claims.
 Most notebooks follow this shape: title and brief introduction (resolution, coverage, distinguishing
 features, catalog link, and license where required); Colab install cell; open and display `ds`; a
 structure note only if the repr is insufficient; short point-series and map examples; two or three
-question-led sections; a loaded and coarsened `FuncAnimation` rendered with `HTML(anim.to_jshtml())`;
+question-led sections; a `FuncAnimation` rendered with `HTML(anim.to_jshtml())`;
 and a community challenge with genuinely open questions.
 
 Bound reads to fixed time slices and regions. Animations usually dominate file size, so shorten or
