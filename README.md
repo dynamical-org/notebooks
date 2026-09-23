@@ -1,6 +1,6 @@
 # dynamical.org datasets example notebooks
 
-Python jupyter notebooks demonstrating the use of dynamical.org datasets. Browse the dataset catalog at [dynamical.org/catalog](https://dynamical.org/catalog/).
+Python jupyter notebooks demonstrating the use of dynamical.org datasets via the [`dynamical-catalog`](https://pypi.org/project/dynamical-catalog/) Python library. Browse the dataset catalog at [dynamical.org/catalog](https://dynamical.org/catalog/).
 
 
 # Getting started

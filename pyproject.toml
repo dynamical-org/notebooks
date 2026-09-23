@@ -5,16 +5,24 @@ description = "Add your description here"
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
-    "aiohttp>=3.11.14",
     "cartopy>=0.24.1",
-    "icechunk>=1.1.12",
-    "matplotlib>=3.10.1",
+    "duckdb>=1.5.2",
+    "dynamical-catalog>=1.0.0",
+    "geopandas>=1.1.4",
+    "gribberish>=1.5.0",
+    "icechunk~=2.2",
+    "matplotlib~=3.11",
+    "metpy>=1.6.3",
     "pandas>=2.2.3",
-    "requests>=2.32.3",
+    "plotly>=6.0",
+    "pyproj>=3.7.2",
+    "pystac>=1.10.0",
+    "requests>=2.34.2",
     "rioxarray>=0.19.0",
-    "s3fs>=2025.3.0",
-    "xarray[complete]>=2025.3.0",
-    "zarr>=3.0.8",
+    "scipy>=1.14.0",
+    "xarray~=2026.7",
+    "xvec>=0.5.2",
+    "zarr~=3.4",
 ]
 
 [dependency-groups]

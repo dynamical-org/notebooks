@@ -11,6 +11,7 @@ Checks:
   proving a single clean run from top to bottom.
 """
 
+import argparse
 import sys
 from pathlib import Path
 
@@ -86,13 +87,20 @@ def validate_notebook(notebook_path: Path) -> list[str]:
     return errors
 
 
-def main() -> int:
+def main(argv: list[str] | None = None) -> int:
+    parser = argparse.ArgumentParser(description="Validate executed notebooks.")
+    parser.add_argument("notebooks", nargs="*", type=Path)
+    args = parser.parse_args(argv)
+
     root_dir = Path(__file__).parent.parent
-    notebooks = sorted(
-        p
-        for p in root_dir.glob("*.ipynb")
-        if p.name not in SKIP_NOTEBOOKS
-    )
+    if args.notebooks:
+        notebooks = args.notebooks
+    else:
+        notebooks = sorted(
+            p
+            for p in root_dir.glob("*.ipynb")
+            if p.name not in SKIP_NOTEBOOKS
+        )
 
     if not notebooks:
         print("ERROR: No notebooks found")
