@@ -19,6 +19,7 @@ dependencies = [
     "pystac>=1.10.0",
     "requests>=2.34.2",
     "rioxarray>=0.19.0",
+    "scipy>=1.14.0",
     "xarray~=2026.7",
     "xvec>=0.5.2",
     "zarr~=3.4",
