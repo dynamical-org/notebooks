@@ -19,8 +19,8 @@ on:
   # pull_request_target, not pull_request: an outside contributor's PR comes from a
   # fork, and fork-triggered `pull_request` runs get no secrets (so no webhook) and
   # sit behind first-time-contributor approval. `pull_request_target` runs the base
-  # branch's copy of this file with secrets available. Safe here only because the job
-  # never checks out or executes PR head code.
+  # repository's default-branch copy with secrets available. Safe here only because
+  # the job never checks out or executes PR head code.
   pull_request_target:
     types: [opened]
 
@@ -29,7 +29,9 @@ permissions: {}
 jobs:
   notify:
     runs-on: ubuntu-latest
-    # Anyone in the org is OWNER/MEMBER/COLLABORATOR, so this needs no username list.
+    timeout-minutes: 2
+    # Repository association is a filter, not an org-membership lookup: outside
+    # collaborators are skipped too. Missing/unknown associations notify.
     # pull_request comes last in the chain: on review events it holds the PR author's
     # association, and the reviewer's is the one that decides whether to notify.
     if: >-
@@ -70,13 +72,33 @@ jobs:
             *)                           WHAT="posted" ;;
           esac
 
-          BODY_TRIM=$(printf '%s' "$BODY" | head -c 600)
-          [ "${#BODY}" -gt 600 ] && BODY_TRIM="$BODY_TRIM…"
-
           jq -n \
             --arg actor "$ACTOR" --arg what "$WHAT" --arg url "$URL" \
-            --arg repo "$REPO" --arg title "$TITLE" --arg body "$BODY_TRIM" \
-            '{ text: ("*<" + $url + "|" + $actor + " " + $what + ">* in `" + $repo + "`"
-                      + (if $title == "" then "" else "\n*" + $title + "*" end)
-                      + (if $body  == "" then "" else "\n>" + ($body | gsub("\n"; "\n>")) end)) }' \
-            | curl -sS -f -X POST -H 'Content-type: application/json' --data @- "$SLACK_WEBHOOK"
+            --arg repo "$REPO" --arg title "$TITLE" --arg body "$BODY" \
+            'def clip($n): if length > $n then .[0:($n - 1)] + "…" else . end;
+             def escape: gsub("&"; "&amp;") | gsub("<"; "&lt;") | gsub(">"; "&gt;");
+             def plain: {type: "section", text: {type: "plain_text", text: ., emoji: false}};
+             # Clip Unicode code points before escaping; each block stays <= 3000 characters.
+             ($title | clip(300) | escape) as $title |
+             ($body | clip(600) | escape) as $body |
+             {
+               text: ([$actor + " " + $what + " in " + $repo, $url, $title, $body]
+                      | map(select(test("\\S"))) | join("\n")),
+               mrkdwn: false,
+               parse: "none",
+               link_names: false,
+               unfurl_links: false,
+               unfurl_media: false,
+               blocks: ([{
+                 type: "section",
+                 # Only GitHub-generated URL/login/repository metadata enters mrkdwn.
+                 text: {type: "mrkdwn", verbatim: true,
+                        text: ("<" + $url + "|" + $actor + " " + $what + "> in `" + $repo + "`")}
+               }] + ([$title, $body] | map(select(test("\\S")) | plain)))
+             }' \
+            | curl --silent --fail --connect-timeout 10 --max-time 30 \
+                --output /dev/null -X POST -H 'Content-type: application/json' \
+                --data @- "$SLACK_WEBHOOK" || {
+                  echo '::error::Slack notification failed'
+                  exit 1
+                }
