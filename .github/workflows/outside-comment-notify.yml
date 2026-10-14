@@ -34,8 +34,10 @@ jobs:
     # collaborators are skipped too. Missing/unknown associations notify.
     # pull_request comes last in the chain: on review events it holds the PR author's
     # association, and the reviewer's is the one that decides whether to notify.
+    # Our agent accounts are ordinary users, not Bots, so they are skipped by login.
     if: >-
       github.event.sender.type != 'Bot' &&
+      !contains(fromJSON('["mrshll-agent"]'), github.event.sender.login) &&
       !contains(fromJSON('["OWNER","MEMBER","COLLABORATOR"]'),
         github.event.comment.author_association ||
         github.event.review.author_association ||
