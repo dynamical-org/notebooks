@@ -139,7 +139,7 @@ name = "cffi"
 version = "2.1.1"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
-    { name = "pycparser" },
+    { name = "pycparser", marker = "implementation_name != 'PyPy'" },
 ]
 sdist = { url = "https://files.pythonhosted.org/packages/9e/ef/008a1939e372c06329a3fce4279c02f328488f3526744906eeec3da7ad5f/cffi-2.1.1.tar.gz", hash = "sha256:dd31f52ea1086513bb9df30f8fcee9b8918323ae067a3d5b78bc826a000712be", size = 530807, upload-time = "2026-08-03T21:21:18.939Z" }
 wheels = [
@@ -534,7 +534,7 @@ wheels = [
 
 [[package]]
 name = "dynamical-catalog"
-version = "1.0.1"
+version = "1.1.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "gribberish" },
@@ -542,9 +542,9 @@ dependencies = [
     { name = "xarray" },
     { name = "zarr" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/91/86/8f9c45100e96d2139f6f3e5833755e55977e44e2f84ade713f3fe3502bf6/dynamical_catalog-1.0.1.tar.gz", hash = "sha256:4b566d1fd7dbf3c9588ed3b307c0c0dc028f3f987c8bca0b9f8afe3ab104e7a4", size = 68975, upload-time = "2026-09-04T14:51:57.946Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/54/89/f96dcd6aed0bf6ccdf9ca8615f52ad3c4d3d96199f58955379229d259c35/dynamical_catalog-1.1.0.tar.gz", hash = "sha256:452eeabdb04a29858bdb412fa12fadd6bbf6295a3c8474cc68b27a289f817ea0", size = 72495, upload-time = "2026-10-29T17:58:00.091Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/32/11/2c2f5b0e7b9c772ab159e51a5bbe315e3f30644eafa84d5b5920b4e403f5/dynamical_catalog-1.0.1-py3-none-any.whl", hash = "sha256:337ef1b9608952bef7e2b0987e3010d569ae2b0d0f0762a3c2882f9c1cbab9be", size = 10537, upload-time = "2026-09-04T14:51:56.717Z" },
+    { url = "https://files.pythonhosted.org/packages/b9/b9/e7ac3aaa1cc27d64d39ec8e0ea993bf416028fa6b0ae796a8ea31d6c1e8c/dynamical_catalog-1.1.0-py3-none-any.whl", hash = "sha256:eedfd5edabd9804e0d217f70b71ebc5add3492549a248298986d5e5d65e3dabb", size = 11404, upload-time = "2026-10-29T17:57:58.747Z" },
 ]
 
 [[package]]
@@ -1204,7 +1204,7 @@ dev = [
 requires-dist = [
     { name = "cartopy", specifier = ">=0.24.1" },
     { name = "duckdb", specifier = ">=1.5.2" },
-    { name = "dynamical-catalog", specifier = ">=1.0.0" },
+    { name = "dynamical-catalog", specifier = ">=1.1.0" },
     { name = "geopandas", specifier = ">=1.1.4" },
     { name = "gribberish", specifier = ">=1.5.0" },
     { name = "icechunk", specifier = "~=2.2" },
@@ -1419,7 +1419,7 @@ name = "pexpect"
 version = "4.9.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
-    { name = "ptyprocess" },
+    { name = "ptyprocess", marker = "sys_platform != 'emscripten' and sys_platform != 'win32'" },
 ]
 sdist = { url = "https://files.pythonhosted.org/packages/42/92/cc564bf6381ff43ce1f4d06852fc19a2f11d180f23dc32d9588bee2f149d/pexpect-4.9.0.tar.gz", hash = "sha256:ee7d41123f3c9911050ea2c2dac107568dc43b2d3b0c7557a33212c398ead30f", size = 166450, upload-time = "2023-11-25T09:07:26.339Z" }
 wheels = [
