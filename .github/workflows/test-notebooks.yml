@@ -36,6 +36,8 @@ jobs:
         run: uv run python -m unittest tests/test_notebook_coordinator.py tests/test_notebook_deps.py tests/test_notebook_isolation.py
 
       - name: Run and validate notebook shard
+        env:
+          DYNAMICAL_STAC_CATALOG_URL: https://stac-staging.dynamical.org/catalog.json
         run: uv run python .internal/test_notebooks.py --isolated --shard-index ${{ strategy.job-index }} --shard-count ${{ strategy.job-total }}
 
   test-notebooks:
