@@ -23,7 +23,8 @@ showing one event several ways. Early cells should read as dataset usage, not a 
 **Show, don't tell.** Prefer xarray's plotting and selection APIs so coordinates and metadata label
 the result. Use xarray options such as `robust=True` and `center=False` before adding matplotlib
 code. Keep stored units unless they are unfamiliar to most readers; set `long_name` and `units` on
-derived fields so they label themselves. Keep cells small.
+derived fields so they label themselves. Avoid manual axis labels when the metadata labels suffice.
+Keep cells small and each `dynamical_catalog.open(...)` call on one line.
 
 Avoid decorative markers, annotations, masks, and extra panels unless the result is unclear without
 them. Keep the basemap features needed to interpret the data. Comment only context the code cannot
@@ -31,13 +32,16 @@ express, such as the event behind a timestamp.
 
 **Prose.** Use two or three sentences per section to name the event and orient the reader, then let
 the plot carry the finding. Do not repeat the catalog page or the `ds` repr, or compute values solely
-to quote them in prose. Distinguish model fields from observations and make only claims supported by
-the plot.
+to quote them in prose. Name fields accurately as forecasts, analyses or observations, and make only
+claims supported by the plot. Use plain product terms and expand unfamiliar acronyms. State what
+the example shows; keep caveats only when they change its interpretation, and omit redundant
+contrasts and inventories of absent variables.
 
 **Before writing**, read the closest notebooks: the same provider or model and the same dataset
 shape (forecast or analysis, deterministic or ensemble, regional or global). Reuse their conventions
 and domain knowledge, but choose different events. Research notable weather within the dataset's
-verified coverage and verify dates and claims.
+verified coverage and verify dates and claims. Link only to authoritative government sources or
+Wikipedia unless the user specifies a different source.
 
 Most notebooks follow this shape: title and brief introduction (resolution, coverage, distinguishing
 features, catalog link, and license where required); Colab install cell; open and display `ds`; a
@@ -46,17 +50,24 @@ question-led sections; a `FuncAnimation` rendered with `HTML(anim.to_jshtml())`;
 and a community challenge with genuinely open questions. Use one bullet per community challenge
 question.
 
+Use short introduction paragraphs to explain the model or analysis, distinguish the available
+datasets, and state their cadence. Include access tradeoffs only when they help readers choose a
+dataset for their task.
+
 Use this structure for the introduction cell:
 
 - Title: `Quickstart: <dataset name> - dynamical.org Icechunk Zarr`.
   For multiple datasets, combine their names unambiguously within the catalog, for example
   `Quickstart: UCSB CHC CHIRPS analysis, preliminary and final - dynamical.org Icechunk Zarr`.
 - Documentation: `Dataset documentation: <full link>`. For multiple datasets, use one bullet per
-  dataset with its name and full documentation link.
+  dataset with a short, unambiguous label and full documentation link; omit wording shared by all
+  labels when the title already supplies it.
 - Include a dataset license only when its terms are not solely CC BY 4.0.
 
 Bound reads to fixed time slices and regions. Animations usually dominate file size, so shorten or
-coarsen them as needed to keep the notebook under the repository limit.
+coarsen them as needed to keep the notebook under the repository limit. Inspect cell runtimes and
+reduce reads or frames that add little to the example. Do not call `plt.close(fig)` for animations;
+retain the PNG preview for GitHub and other static viewers.
 
 ## .internal/ tools
 
