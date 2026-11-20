@@ -23,7 +23,6 @@ dependencies = [
     "shapely>=2.0",
     "uxarray>=2026.10.1",
     "xarray~=2026.7",
-    "xugrid>=0.15.3",
     "xvec>=0.5.2",
     "zarr~=3.4",
 ]

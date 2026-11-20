@@ -15,7 +15,6 @@ dependencies:
   - geopandas
   - xvec
   - shapely>=2.0
-  - xugrid>=0.15.3
   - uxarray>=2026.10.1
   - netcdf4
   - scipy

@@ -1370,7 +1370,6 @@ dependencies = [
     { name = "shapely" },
     { name = "uxarray" },
     { name = "xarray" },
-    { name = "xugrid" },
     { name = "xvec" },
     { name = "zarr" },
 ]
@@ -1402,7 +1401,6 @@ requires-dist = [
     { name = "shapely", specifier = ">=2.0" },
     { name = "uxarray", specifier = ">=2026.10.1" },
     { name = "xarray", specifier = "~=2026.7" },
-    { name = "xugrid", specifier = ">=0.15.3" },
     { name = "xvec", specifier = ">=0.5.2" },
     { name = "zarr", specifier = "~=3.4" },
 ]
@@ -2978,22 +2976,6 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/48/33/8c2bcceedfa13122916b6a582eedf9581682dbee329d95bcfb4c69542ade/xproj-0.2.1.tar.gz", hash = "sha256:d520c7a0df402f6a5922108ed614c8ea0ce6b04bec12c91aceb75fe3c1d3c5c3", size = 31781, upload-time = "2025-07-07T09:05:48.022Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/05/b9/b6a9cf72aef69c3e6db869dcc130e19452a658366dac9377f9cd32a76b80/xproj-0.2.1-py3-none-any.whl", hash = "sha256:d762c540c1bc4abc5955b4034b409b9b2f7733c3e49285f3aeb71f9a2dd6bf34", size = 23837, upload-time = "2025-07-07T09:05:46.889Z" },
-]
-
-[[package]]
-name = "xugrid"
-version = "0.15.3"
-source = { registry = "https://pypi.org/simple" }
-dependencies = [
-    { name = "numpy" },
-    { name = "pandas" },
-    { name = "pooch" },
-    { name = "scipy" },
-    { name = "xarray" },
-]
-sdist = { url = "https://files.pythonhosted.org/packages/cb/30/4d5b538e5974278167a301f3c184acdd8f609adbf1e7ea32106f7b6a1095/xugrid-0.15.3.tar.gz", hash = "sha256:1096ef4c2df1b9360a41e39972d151b50de16531330ab909200a0ae4c7eab0e3", size = 196575, upload-time = "2026-06-19T14:47:27.348Z" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/07/70/746ab7140121dcf04bade9ab7d2e65b6d5eb5b23bb7dc04b7ad22742ca0f/xugrid-0.15.3-py3-none-any.whl", hash = "sha256:6afb89f9ac72ae2d3d0fde476d366e8eb112f448a1bc2313a5189ebff06074e1", size = 153213, upload-time = "2026-06-19T14:47:26.024Z" },
 ]
 
 [[package]]
